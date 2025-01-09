@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="YFAI101.png" type="image/png">
+    <title>Subscription</title>
+    <style>
+        /* Navigation Bar Styling */
+        nav {
+            position: absolute;
+            top: 10px; /* Distance from the top */
+            right: 10px; /* Distance from the right */
+            display: flex;
+            gap: 10px; /* Spacing between links */
+        }
+
+        nav a {
+            font-size: 15px;
+            text-decoration: none;
+            color: black;
+            background-color: transparent; /* Set background to transparent */
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        nav a:hover {
+            background-color: #eaeaea;
+        }
+
+        /* Main Content Styling */
+        .content-wrapper {
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            height: 100vh; /* Full height of the viewport */
+            margin: 0; /* Remove margin */
+        }
+
+        .content {
+            text-align: center; /* Center the text inside the content box */
+            color: #5f6ef5; /* Dark purple color */
+            font-family: 'Inter', sans-serif;
+        }
+
+        .content h1 {
+            font-size: 40px; /* Header size */
+            font-family: 'Inter', sans-serif;
+        }
+
+        .content a {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 20px; /* Space between text and buttons */
+        }
+
+        /* Button Styling */
+        .button-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Space between buttons */
+        }
+
+        .button {
+            padding: 15px 30px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            background-color: #5f6ef5; /* Button color */
+            color: white; /* Text color */
+            text-decoration: none; /* Remove underline */
+            border: 1px solid transparent; /* Border for styling */
+            border-radius: 25px; /* Fully rounded corners */
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effect */
+        }
+
+        .button:hover {
+            background-color: #4e5ae0; /* Darker button color on hover */
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* More pronounced shadow on hover */
+        }
+
+        /* Global Styling for Theme */
+        body {
+            background-color: #f6f6f6; /* Light gray background */
+            color: black; /* Black text */
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="index.html">🏠</a>
+        <a href="Announcments.html">📢</a>
+        <a href="Subscription.html">✨</a>
+        <a href="Search.html">🔎</a>
+        <a href="CoPilot.html">🛫</a>
+        <a href="Policy.html">📚</a>
+        <a href="Friends.html">🧑‍🤝‍🧑</a>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="content-wrapper">
+        <div class="content">
+            <h1>YouForm AI</h1>
+            <a>What plan would you want to choose?</a>
+            <div class="button-wrapper">
+                <a href="Free.html" class="button">Free/Basic</a>
+                <a href="Pro.html" class="button">Pro</a>
+                <a href="ComingSoon.html" class="button">Super</a>
+                <a href="ComingSoon.html" class="button">Ultra</a>
+            </div>
+        </div>
+    </div>
+
+
+</body></html>
