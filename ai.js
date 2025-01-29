@@ -43,6 +43,8 @@ async function fetchCohereResponse(message) {
 }
 
 async function sendMessage() {
+    const chatInput = document.getElementById("chat-input");
+    const chatArea = document.querySelector(".chat-area");
     const message = chatInput.value.trim();
     if (!message) return;
 
@@ -79,6 +81,18 @@ deepaiButton.onclick = () => {
     alert("Switched to DeepAI");
 };
 
+deepaiButton.style.position = "fixed";
+deepaiButton.style.top = "10px";
+deepaiButton.style.right = "120px";
+deepaiButton.style.padding = "10px";
+deepaiButton.style.background = "#007bff";
+deepaiButton.style.color = "#ffffff";
+deepaiButton.style.border = "none";
+deepaiButton.style.cursor = "pointer";
+deepaiButton.style.borderRadius = "5px";
+
+document.body.appendChild(deepaiButton);
+
 const cohereButton = document.createElement("button");
 cohereButton.textContent = "Use Cohere";
 cohereButton.onclick = () => {
@@ -86,6 +100,14 @@ cohereButton.onclick = () => {
     alert("Switched to Cohere");
 };
 
-// Add buttons to the page
-document.body.appendChild(deepaiButton);
+cohereButton.style.position = "fixed";
+cohereButton.style.top = "10px";
+cohereButton.style.right = "10px";
+cohereButton.style.padding = "10px";
+cohereButton.style.background = "#28a745";
+cohereButton.style.color = "#ffffff";
+cohereButton.style.border = "none";
+cohereButton.style.cursor = "pointer";
+cohereButton.style.borderRadius = "5px";
+
 document.body.appendChild(cohereButton);
