@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crayon AI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #6B46C1;
+            --secondary-color: #9F7AEA;
+            --bg-color: #F7FAFC;
+            --chat-bg: #ffffff;
+            --text-color: #2D3748;
+            --border-color: #E2E8F0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--chat-bg);
+            border-right: 1px solid var(--border-color);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .new-chat {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .new-chat:hover {
+            background: var(--secondary-color);
+        }
+
+        .chat-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .chat-header {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--chat-bg);
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .message {
+            max-width: 80%;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            background: var(--primary-color);
+            color: white;
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background: var(--chat-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .input-container {
+            padding: 1.5rem;
+            background: var(--chat-bg);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-box {
+            display: flex;
+            gap: 1rem;
+            background: var(--bg-color);
+            padding: 0.8rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        textarea {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            resize: none;
+            outline: none;
+            font-size: 1rem;
+            max-height: 200px;
+            min-height: 24px;
+        }
+
+        .send-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .send-button:hover {
+            background: var(--secondary-color);
+        }
+
+        .model-selector {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <button class="new-chat">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            New Chat
+        </button>
+        <select class="model-selector">
+            <option value="default">Crayon AI - Default</option>
+            <option value="creative">Crayon AI - Creative</option>
+            <option value="precise">Crayon AI - Precise</option>
+        </select>
+    </aside>
+
+    <main class="chat-container">
+        <header class="chat-header">
+            <h1>Crayon AI</h1>
+        </header>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message ai-message">
+                Hello! I'm Crayon AI. How can I assist you today?
+            </div>
+        </div>
+
+        <div class="input-container">
+            <div class="input-box">
+                <textarea 
+                    placeholder="Message Crayon AI..." 
+                    rows="1" 
+                    id="user-input"
+                ></textarea>
+                <button class="send-button" id="send-button">Send</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        // Auto-resize textarea
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Handle send message
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message) {
+                // Add user message
+                addMessage(message, 'user');
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    const response = "Thank you for your message! This is a demo interface, so I'm providing a simulated response. In a real implementation, this would connect to an AI API.";
+                    addMessage(response, 'ai');
+                }, 1000);
+
+                // Clear input
+                userInput.value = '';
+                userInput.style.height = 'auto';
+            }
+        }
+
+        function addMessage(content, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(type === 'user' ? 'user-message' : 'ai-message');
+            messageDiv.textContent = content;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
