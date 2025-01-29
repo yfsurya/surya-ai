@@ -14,6 +14,14 @@
             --border-color: #333333;
         }
 
+        [data-theme="light"] {
+            --bg-color: #ffffff;
+            --sidebar-bg: #f0f0f0;
+            --text-color: #000000;
+            --input-bg: #e0e0e0;
+            --border-color: #cccccc;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -40,67 +48,16 @@
             transition: transform 0.3s ease;
         }
 
-        .new-chat {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-color);
-            cursor: pointer;
-            font-size: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .chat-list {
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-
-        .chat-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-            text-decoration: none;
-        }
-
-        .chat-item:hover {
-            background: var(--input-bg);
-        }
-
-        .chat-item.active {
-            background: var(--input-bg);
-        }
-
         .chat-item .material-icons {
             font-size: 1.25rem;
         }
 
-        .bottom-menu {
-            margin-top: auto;
-            border-top: 1px solid var(--border-color);
-            padding-top: 1rem;
+        .chat-item.active .material-icons {
+            content: "brightness_7";
         }
 
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            color: var(--text-color);
-            text-decoration: none;
-            border-radius: 8px;
-        }
-
-        .menu-item:hover {
-            background: var(--input-bg);
+        .chat-item:not(.active) .material-icons {
+            content: "brightness_empty";
         }
 
         .main-content {
@@ -109,21 +66,6 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-        }
-
-        .chat-area {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 2rem;
-        }
-
-        .welcome-text {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
         }
 
         .input-container {
@@ -135,176 +77,53 @@
             background: var(--bg-color);
             border-top: 1px solid var(--border-color);
         }
-
-        .input-box {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: var(--input-bg);
-            padding: 0.8rem 1.2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .input-box input {
-            flex-grow: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-color);
-            font-size: 1rem;
-            outline: none;
-        }
-
-        .input-box .material-icons {
-            color: var(--text-color);
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                z-index: 1000;
-            }
-
-            .sidebar.visible {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .input-container {
-                left: 0;
-            }
-        }
     </style>
 </head>
 <body>
-    <aside class="sidebar" id="sidebar">
-        <button class="new-chat">
-            <span class="material-icons">add</span>
-            New Chat
-        </button>
-
-        <div class="chat-list">
-            <h2 style="margin-bottom: 1rem; font-size: 0.9rem; color: #666;">Recent Chats</h2>
-            <a href="#" class="chat-item active">
-                <span class="material-icons">star</span>
-                Current Chat
-            </a>
-            <a href="#" class="chat-item">
-                <span class="material-icons">brightness_empty_fill</span>
-                Previous Chat
-            </a>
-        </div>
-
+    <aside class="sidebar">
+        <button class="new-chat">New Chat</button>
+        <div class="chat-list"></div>
         <div class="bottom-menu">
-            <a href="help.html" class="menu-item">
-                <span class="material-icons">help_outline</span>
-                Help
-            </a>
-            <a href="settings.html" class="menu-item">
-                <span class="material-icons">settings</span>
-                Settings
-            </a>
+            <a href="#" class="menu-item">Settings</a>
+            <div class="toggle-theme">
+                <span class="material-icons">brightness_6</span>
+                Toggle Theme
+            </div>
         </div>
     </aside>
-
     <main class="main-content">
-        <div class="chat-area">
-            <h1 class="welcome-text">What do you need today?</h1>
-        </div>
-
+        <div class="chat-area"></div>
         <div class="input-container">
-            <div class="input-box">
-                <span class="material-icons">image</span>
-                <input type="text" placeholder="Message Surya AI" />
-                <span class="material-icons">mic</span>
-            </div>
-            <div style="text-align: center; margin-top: 0.5rem; font-size: 0.8rem; color: #666;">
-                Surya AI can make mistakes. Double check important information.
-            </div>
+            <input type="file" id="image-upload" style="display: none;">
+            <span class="material-icons" onclick="document.getElementById('image-upload').click();">image</span>
+            <input type="text" id="chat-input" placeholder="Message Surya AI">
+            <span class="material-icons" id="voice-input">mic</span>
+            <button class="send-message">Send</button>
         </div>
     </main>
-
     <script>
-        // Handle chat item clicks
+        document.querySelector('.toggle-theme').addEventListener('click', () => {
+            const theme = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', theme === 'light' ? 'dark' : 'light');
+        });
+
         document.querySelectorAll('.chat-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
-                document.querySelectorAll('.chat-item').forEach(chat => {
-                    chat.classList.remove('active');
-                    const star = chat.querySelector('.material-icons');
-                    star.textContent = 'star_border';
-                });
+                document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
                 item.classList.add('active');
-                const star = item.querySelector('.material-icons');
-                star.textContent = 'star';
             });
         });
 
-        // Handle new chat
-        document.querySelector('.new-chat').addEventListener('click', () => {
-            const chatList = document.querySelector('.chat-list');
-            const newChat = document.createElement('a');
-            newChat.href = '#';
-            newChat.className = 'chat-item';
-            newChat.innerHTML = `
-                <span class="material-icons">star_border</span>
-                New Chat ${document.querySelectorAll('.chat-item').length + 1}
-            `;
-            
-            // Add click handler to new chat item
-            newChat.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.chat-item').forEach(chat => {
-                    chat.classList.remove('active');
-                    const star = chat.querySelector('.material-icons');
-                    star.textContent = 'star_border';
-                });
-                newChat.classList.add('active');
-                const star = newChat.querySelector('.material-icons');
-                star.textContent = 'star';
-            });
-            
-            chatList.insertBefore(newChat, chatList.children[1]);
+        document.getElementById('voice-input').addEventListener('click', () => {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+            recognition.start();
+            recognition.onresult = event => {
+                document.getElementById('chat-input').value = event.results[0][0].transcript;
+            };
         });
-
-        // Mobile menu handling
-        const menuButton = document.createElement('button');
-        menuButton.innerHTML = '<span class="material-icons">menu</span>';
-        menuButton.style.cssText = `
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1001;
-            background: transparent;
-            border: none;
-            color: white;
-            display: none;
-            cursor: pointer;
-            padding: 0.5rem;
-        `;
-
-        document.body.appendChild(menuButton);
-
-        menuButton.addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.toggle('visible');
-        });
-
-        // Show/hide menu button based on screen size
-        function handleResize() {
-            if (window.innerWidth <= 768) {
-                menuButton.style.display = 'block';
-            } else {
-                menuButton.style.display = 'none';
-                document.querySelector('.sidebar').classList.remove('visible');
-            }
-        }
-
-        window.addEventListener('resize', handleResize);
-        handleResize(); // Initial check
     </script>
 </body>
 </html>
