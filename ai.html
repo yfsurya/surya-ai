@@ -34,7 +34,7 @@
             color: var(--text-color);
             height: 100vh;
             display: flex;
-            transition: background-color 0.3s ease;
+            transition: background 0.3s ease;
         }
 
         .sidebar {
@@ -46,37 +46,64 @@
             height: 100vh;
             position: fixed;
             left: -280px;
-            transition: left 0.3s ease;
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
-        .sidebar.open {
+        .sidebar.active {
+            transform: translateX(280px);
+        }
+
+        .menu-overlay {
+            position: fixed;
+            top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+            z-index: 999;
         }
 
-        .menu-toggle {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
+        .menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .menu-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
             cursor: pointer;
+            z-index: 1100;
+        }
+
+        .menu-button span {
+            font-size: 2rem;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            margin-top: 2rem;
+        }
+
+        .menu-items a {
+            margin: 10px 0;
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
         }
 
         .main-content {
             flex-grow: 1;
-            margin-left: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .toggle-theme {
-            position: absolute;
-            bottom: 1.5rem;
-            left: 1.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
+            transition: margin-left 0.3s ease;
         }
 
         .input-container {
@@ -84,57 +111,61 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 1rem;
+            padding: 1.5rem;
             background: var(--bg-color);
-            border-top: 1px solid var(--border-color);
+        }
+
+        .bottom-menu {
+            margin-top: auto;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
         }
 
-        .input-container input {
-            width: 60%;
-            padding: 0.75rem;
-            background: var(--input-bg);
-            border: none;
-            border-radius: 5px;
-            color: var(--text-color);
-            outline: none;
-        }
-
-        .input-container span {
-            margin: 0 10px;
+        .bottom-menu a, .toggle-theme {
+            padding: 10px;
             cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="menu-toggle">
+    <div class="menu-overlay"></div>
+    <div class="menu-button">
         <span class="material-icons">menu</span>
     </div>
     <aside class="sidebar">
-        <button class="new-chat">+ New Chat</button>
-        <div class="chat-list"></div>
-        <div class="bottom-menu">
+        <nav class="menu-items">
+            <a href="#" class="new-chat">New Chat</a>
+            <a href="#" class="menu-item">Recents</a>
             <a href="#" class="menu-item">Settings</a>
+            <a href="#" class="menu-item">Help</a>
             <div class="toggle-theme">
-                <span class="material-icons">brightness_6</span>
-                Toggle Theme
+                <span class="material-icons">brightness_6</span> Toggle Theme
             </div>
-        </div>
+        </nav>
     </aside>
     <main class="main-content">
-        <h1>What do you need today?</h1>
+        <div class="chat-area"></div>
+        <div class="input-container">
+            <input type="file" id="image-upload" style="display: none;">
+            <span class="material-icons" onclick="document.getElementById('image-upload').click();">image</span>
+            <input type="text" id="chat-input" placeholder="Message Surya AI">
+            <span class="material-icons" id="voice-input">mic</span>
+            <button class="send-message">Send</button>
+        </div>
     </main>
-    <div class="input-container">
-        <input type="file" id="image-upload" style="display: none;">
-        <span class="material-icons" onclick="document.getElementById('image-upload').click();">image</span>
-        <input type="text" id="chat-input" placeholder="Message Surya AI">
-        <span class="material-icons" id="voice-input">mic</span>
-    </div>
     <script>
-        document.querySelector('.menu-toggle').addEventListener('click', () => {
-            document.querySelector('.sidebar').classList.toggle('open');
+        const menuButton = document.querySelector('.menu-button');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.menu-overlay');
+
+        menuButton.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
         });
 
         document.querySelector('.toggle-theme').addEventListener('click', () => {
