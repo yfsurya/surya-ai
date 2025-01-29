@@ -7,19 +7,19 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #000000;
-            --sidebar-bg: #1a1a1a;
-            --text-color: #ffffff;
-            --input-bg: #2a2a2a;
-            --border-color: #333333;
-        }
-
-        [data-theme="light"] {
             --bg-color: #ffffff;
             --sidebar-bg: #f0f0f0;
             --text-color: #000000;
             --input-bg: #e0e0e0;
             --border-color: #cccccc;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --sidebar-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --input-bg: #2a2a2a;
+            --border-color: #333333;
         }
 
         * {
@@ -34,6 +34,7 @@
             color: var(--text-color);
             height: 100vh;
             display: flex;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .sidebar {
@@ -44,48 +45,63 @@
             flex-direction: column;
             height: 100vh;
             position: fixed;
-            left: 0;
-            transition: transform 0.3s ease;
+            left: -280px;
+            transition: transform 0.3s ease-in-out;
         }
 
-        .chat-item .material-icons {
-            font-size: 1.25rem;
+        .sidebar.open {
+            transform: translateX(280px);
         }
 
-        .chat-item.active .material-icons {
-            content: "brightness_7";
-        }
-
-        .chat-item:not(.active) .material-icons {
-            content: "brightness_empty";
+        .menu-button {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
         }
 
         .main-content {
             flex-grow: 1;
-            margin-left: 280px;
+            margin-left: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .main-content.shift {
+            margin-left: 280px;
         }
 
         .input-container {
             position: fixed;
             bottom: 0;
-            left: 280px;
+            left: 0;
             right: 0;
             padding: 1.5rem;
             background: var(--bg-color);
             border-top: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .toggle-theme {
+            margin-top: auto;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
     </style>
 </head>
 <body>
+    <span class="material-icons menu-button" onclick="toggleMenu()">menu</span>
     <aside class="sidebar">
         <button class="new-chat">New Chat</button>
         <div class="chat-list"></div>
         <div class="bottom-menu">
             <a href="#" class="menu-item">Settings</a>
-            <div class="toggle-theme">
+            <div class="toggle-theme" onclick="toggleTheme()">
                 <span class="material-icons">brightness_6</span>
                 Toggle Theme
             </div>
@@ -102,18 +118,15 @@
         </div>
     </main>
     <script>
-        document.querySelector('.toggle-theme').addEventListener('click', () => {
+        function toggleTheme() {
             const theme = document.documentElement.getAttribute('data-theme');
             document.documentElement.setAttribute('data-theme', theme === 'light' ? 'dark' : 'light');
-        });
+        }
 
-        document.querySelectorAll('.chat-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.querySelectorAll('.chat-item').forEach(chat => chat.classList.remove('active'));
-                item.classList.add('active');
-            });
-        });
+        function toggleMenu() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.main-content').classList.toggle('shift');
+        }
 
         document.getElementById('voice-input').addEventListener('click', () => {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
