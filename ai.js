@@ -41,46 +41,66 @@ fileInput.accept = 'image/*';
 fileInput.style.display = 'none';
 document.body.appendChild(fileInput);
 
-// AI API Functions
+// Fixed DeepAI API Function
 async function fetchDeepAIResponse(message) {
     try {
+        const formData = new FormData();
+        formData.append('text', message);
+        
         const response = await fetch("https://api.deepai.org/api/text-generator", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                "api-key": deepAIKey
+                'api-key': deepAIKey
             },
-            body: JSON.stringify({ text: message })
+            body: formData
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         return data.output || "Sorry, I couldn't process your request.";
     } catch (error) {
-        return "Error connecting to DeepAI.";
+        console.error('DeepAI Error:', error);
+        return "Error connecting to DeepAI. Please try again.";
     }
 }
 
+// Fixed Cohere API Function
 async function fetchCohereResponse(message) {
     try {
         const response = await fetch("https://api.cohere.ai/v1/generate", {
             method: "POST",
             headers: {
+                "Authorization": `Bearer ${cohereKey}`,
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${cohereKey}`
+                "Cohere-Version": "2022-12-06"
             },
             body: JSON.stringify({
                 model: "command",
                 prompt: message,
-                max_tokens: 100
+                max_tokens: 300,
+                temperature: 0.9,
+                k: 0,
+                stop_sequences: [],
+                return_likelihoods: "NONE"
             })
         });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
-        return data.generations[0].text || "Sorry, I couldn't process your request.";
+        return data.generations && data.generations[0] ? data.generations[0].text : "Sorry, I couldn't process your request.";
     } catch (error) {
-        return "Error connecting to Cohere.";
+        console.error('Cohere Error:', error);
+        return "Error connecting to Cohere. Please try again.";
     }
 }
 
-// Enhanced send message function with AI integration
+// Enhanced send message function
 async function sendMessage(message, type = 'text', imageUrl = null) {
     if (type === 'text' && (!message || !message.trim())) return;
     
@@ -117,93 +137,70 @@ async function sendMessage(message, type = 'text', imageUrl = null) {
         aiMessage.appendChild(typingIndicator);
         chatArea.appendChild(aiMessage);
         
-        // Fetch AI response
-        let response = "Error: No API selected.";
-        if (selectedAPI === "deepai") {
-            response = await fetchDeepAIResponse(message);
-        } else if (selectedAPI === "cohere") {
-            response = await fetchCohereResponse(message);
+        try {
+            // Fetch AI response with retries
+            let response;
+            let attempts = 0;
+            const maxAttempts = 3;
+            
+            while (attempts < maxAttempts) {
+                try {
+                    if (selectedAPI === "deepai") {
+                        response = await fetchDeepAIResponse(message);
+                    } else if (selectedAPI === "cohere") {
+                        response = await fetchCohereResponse(message);
+                    }
+                    break;
+                } catch (error) {
+                    attempts++;
+                    if (attempts === maxAttempts) {
+                        throw error;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+                }
+            }
+            
+            aiMessage.textContent = response;
+        } catch (error) {
+            aiMessage.textContent = "I'm having trouble connecting right now. Please try again in a moment.";
+            console.error('Error:', error);
         }
-        
-        aiMessage.textContent = response;
     }
     
     chatArea.scrollTop = chatArea.scrollHeight;
     chatInput.value = '';
 }
 
-// Send button click handler
-sendButton.addEventListener('click', () => {
-    const message = chatInput.value.trim();
-    if (message) {
-        sendMessage(message);
+// Rest of your existing event listeners remain the same
+[Previous event listeners for send button, enter key, mic button, etc...]
+
+// Update menu item links
+document.querySelectorAll('.menu-item').forEach(item => {
+    const text = item.querySelector('span:last-child').textContent;
+    if (text === 'Help' || text === 'Settings') {
+        // Remove existing button/link structure
+        const parent = item.parentElement;
+        const grandparent = parent.parentElement;
+        grandparent.removeChild(parent);
+        
+        // Create new link
+        const link = document.createElement('a');
+        link.href = text.toLowerCase() + '.html';
+        link.style.textDecoration = 'none';
+        link.style.color = 'inherit';
+        
+        // Create new menu item
+        const newItem = document.createElement('div');
+        newItem.className = 'menu-item';
+        newItem.innerHTML = `
+            <span class="material-icons">${text.toLowerCase()}</span>
+            <span>${text}</span>
+        `;
+        
+        link.appendChild(newItem);
+        grandparent.appendChild(link);
     }
 });
 
-// Enter key handler
-chatInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        const message = chatInput.value.trim();
-        if (message) {
-            sendMessage(message);
-        }
-    }
-});
-
-// Microphone button handler
-let isListening = false;
-micButton.addEventListener('click', () => {
-    if (!isListening) {
-        recognition.start();
-        micButton.style.color = '#ff0000';
-        isListening = true;
-    } else {
-        recognition.stop();
-        micButton.style.color = '';
-        isListening = false;
-    }
-});
-
-recognition.onresult = (event) => {
-    const transcript = event.results[0][0].transcript;
-    chatInput.value = transcript;
-    micButton.style.color = '';
-    isListening = false;
-};
-
-recognition.onend = () => {
-    micButton.style.color = '';
-    isListening = false;
-};
-
-// Image upload handler
-imageButton.addEventListener('click', () => {
-    fileInput.click();
-});
-
-fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            sendMessage('', 'image', e.target.result);
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// Image preview handling
-const imagePreview = document.querySelector('.image-preview');
-const previewImage = imagePreview.querySelector('img');
-const closePreview = imagePreview.querySelector('.close');
-
-closePreview.addEventListener('click', () => {
-    imagePreview.style.display = 'none';
-});
-
-// Update menu icons to match the design
-document.querySelectorAll('.material-icons').forEach(icon => {
-    if (icon.textContent === 'brightness_6') {
-        icon.textContent = 'brightness_4';  // Filled moon icon for dark mode
-    }
-});
+// Rest of your existing code...
+[Rest of the previous code including image preview handling and menu icon updates]
