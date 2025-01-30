@@ -198,6 +198,30 @@
             cursor: pointer;
             padding: 2px;
         }
+
+        /* Loading indicator styles */
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 5px 10px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-color);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: typing 1s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -217,18 +241,45 @@
             <span class="material-icons">brightness_5</span>
             <span>Other Chat</span>
         </div>
-        <a href='help.html' class="menu-item">
+        <button class="menu-item" onclick="location.href='help.html'">
             <span class="material-icons">help</span>
             <span>Help</span>
-        </a>
-        <a href='settings.html' class="menu-item">
+        </button>
+            <button class="menu-item" onclick="location.href='settings.html'">
             <span class="material-icons">settings</span>
             <span>Settings</span>
-        </a>
+        </button>
+
+        </button>
         <div class="toggle-theme menu-item" onclick="toggleTheme()">
             <span class="material-icons">brightness_6</span>
             <span>Dark/Light Mode</span>
         </div>
     </aside>
+    <main class="main-content">
+        <div class="chat-area"></div>
+        <div class="image-preview">
+            <span class="material-icons close">close</span>
+            <img src="" alt="Preview">
+        </div>
+        <div class="input-container">
+            <span class="material-icons">image</span>
+            <input type="text" id="chat-input" placeholder="Message Surya AI">
+            <span class="material-icons">mic</span>
+            <span class="material-icons">send</span>
+        </div>
+    </main>
+    <script>
+        function toggleMenu() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.overlay').classList.toggle('active');
+        }
+
+        function toggleTheme() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', theme === 'light' ? 'dark' : 'light');
+        }
+    </script>
+    <script src="ai.js"></script>
 </body>
 </html>
