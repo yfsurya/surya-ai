@@ -2,6 +2,10 @@ const deepAIKey = "111585f1-fb53-45e9-a448-862705891936"; // Replace with your D
 const cohereKey = "SIofAYox9NjOOHy3z4XGo9CoRCZfvd01LJSj0f5y"; // Replace with your Cohere API key
 let selectedAPI = "deepai"; // Default API
 
+const chatArea = document.querySelector(".chat-area");
+const chatInput = document.getElementById("chat-input");
+const sendButton = document.querySelector(".material-icons.send");
+
 async function fetchDeepAIResponse(message) {
     try {
         const response = await fetch("https://api.deepai.org/api/text-generator", {
@@ -66,6 +70,20 @@ async function sendMessage() {
         response = await fetchDeepAIResponse(message);
     } else if (selectedAPI === "cohere") {
         response = await fetchCohereResponse(message);
+    }
+
+    aiMessage.textContent = response;
+}
+
+// Send message when Enter is pressed
+chatInput.addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+});
+
+// Send message when send button is clicked
+sendButton.addEventListener("click", sendMessage);
     }
 
     aiMessage.textContent = response;
