@@ -1,4 +1,4 @@
-// Add to the existing HTML file, just before the closing </body> tag
+// Save this as ai.js
 
 // API Keys and Selection
 const deepAIKey = "111585f1-fb53-45e9-a448-862705891936";
@@ -17,6 +17,24 @@ const chatInput = document.getElementById('chat-input');
 const sendButton = document.querySelector('.material-icons:last-child');
 const micButton = document.querySelector('.material-icons:nth-last-child(2)');
 const imageButton = document.querySelector('.material-icons:first-child');
+const inputContainer = document.querySelector('.input-container');
+
+// Add disclaimer message
+const disclaimer = document.createElement('div');
+disclaimer.style.position = 'fixed';
+disclaimer.style.bottom = '5px';
+disclaimer.style.left = '50%';
+disclaimer.style.transform = 'translateX(-50%)';
+disclaimer.style.fontSize = '12px';
+disclaimer.style.color = 'var(--text-color)';
+disclaimer.style.opacity = '0.7';
+disclaimer.style.width = '100%';
+disclaimer.style.textAlign = 'center';
+disclaimer.style.marginBottom = '-25px';
+disclaimer.textContent = 'Surya AI can make mistakes. Double check important information.';
+inputContainer.appendChild(disclaimer);
+
+// File input setup
 const fileInput = document.createElement('input');
 fileInput.type = 'file';
 fileInput.accept = 'image/*';
@@ -87,7 +105,16 @@ async function sendMessage(message, type = 'text', imageUrl = null) {
         // Create and display AI thinking indicator
         const aiMessage = document.createElement('div');
         aiMessage.className = 'ai-message message';
-        aiMessage.textContent = 'Thinking...';
+        
+        // Add typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'typing-indicator';
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'typing-dot';
+            typingIndicator.appendChild(dot);
+        }
+        aiMessage.appendChild(typingIndicator);
         chatArea.appendChild(aiMessage);
         
         // Fetch AI response
@@ -163,6 +190,15 @@ fileInput.addEventListener('change', (e) => {
         };
         reader.readAsDataURL(file);
     }
+});
+
+// Image preview handling
+const imagePreview = document.querySelector('.image-preview');
+const previewImage = imagePreview.querySelector('img');
+const closePreview = imagePreview.querySelector('.close');
+
+closePreview.addEventListener('click', () => {
+    imagePreview.style.display = 'none';
 });
 
 // Update menu icons to match the design
